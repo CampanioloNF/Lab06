@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.tdp.meteo.bean.Rilevamento;
 
@@ -44,9 +46,42 @@ public class MeteoDAO {
 		return null;
 	}
 
-	public Double getAvgRilevamentiLocalitaMese(int mese, String localita) {
+	public Map <String, Double> getAvgRilevamentiMese(int mese) {
 
-		return 0.0;
+
+		final String sql = "SELECT Localita, AVG(umidita) AS MediaUmidita FROM situazione WHERE YEAR(DATA) = 2013 AND MONTH(DATA) = ? GROUP BY localita";
+
+		Map <String, Double> mediaPerLocalita = new HashMap <String, Double> ();
+		
+
+		try {
+			Connection conn = DBConnect.getInstance().getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, mese);
+			
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				mediaPerLocalita.put(rs.getString("Localita"), rs.getDouble("MediaUmidita"));
+				
+			}
+
+			conn.close();
+			return mediaPerLocalita;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+		
+		
 	}
+	
+	
 
 }
