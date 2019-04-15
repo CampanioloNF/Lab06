@@ -130,7 +130,7 @@ public class Model {
 			 * alcuni di essi possono essere valuati solo quando si ha una soluzione completa
 			 */
 			
-			
+			if(this.controlloRicorsivo(parziale, L)) {
 			
 			Citta c = this.listaCitta.get(i);
 
@@ -156,6 +156,8 @@ public class Model {
 			
 			}
 		    
+		  }	
+			
 		}
 		
 	
@@ -200,4 +202,30 @@ public class Model {
 		return true;
 	}
 
+	/*
+	 * Si potrebbero dividire in due i controlli o meglio fare un ulteriore controllo in fase ricorsiva 
+	 * per ottimizzare la ricerca, abbandonando dei rami ricorsivi dopo almeno 6 passaggi
+	 */
+
+	private boolean controlloRicorsivo(List<SimpleCity> parziale, int L) {
+		
+	if(L>=NUMERO_GIORNI_CITTA_MAX) {	
+		
+		for(Citta c : this.listaCitta) {
+			int cont = 0;
+			for(SimpleCity sc : parziale) {
+				if(sc.getNome().equals(c.getNome())) 
+					  cont++;
+				
+			}
+			
+			 if(cont>NUMERO_GIORNI_CITTA_MAX) 
+				  return false;
+					
+		}
+		
+	}
+		
+		return true;
+	}
 }
