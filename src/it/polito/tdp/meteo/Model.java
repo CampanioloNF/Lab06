@@ -21,7 +21,12 @@ public class Model {
 	private MeteoDAO dao;
 	private List<Citta> listaCitta;
 	//private List<Rilevamento> listaRilevamenti;
+	/*
+	 * Preferisco evitare di memorizzare tutti i rilevamenti
+	 * e cheidere al DAO esclusivamente quelli necessari
+	 */
 	
+	// Questi dati servono alla gestione della ricorsione
 	private Double score_best;
 	private List <SimpleCity> best = new LinkedList<SimpleCity>() ;
 	
@@ -40,11 +45,10 @@ public class Model {
 	 * @param mese
 	 * @return una stringa contenente l'umidità media presente nelle città presenti nel DB
 	 */
-	
-	
 	public String getUmiditaMedia(int mese) {
 
-        Map<String, Double> medieUmidita = dao.getAvgRilevamentiMese(mese);
+    //Chiede al DAO la media di umidita presente in ogni citta e le memorizza in una mappa
+		Map<String, Double> medieUmidita = dao.getAvgRilevamentiMese(mese);
 		
       String risultato= String.format("Nel mese %02d le seguenti città presentano in media tale umidità :\n", mese);
         
@@ -69,9 +73,9 @@ public class Model {
 		
 		cerca(parziale, 0, mese);
 		
-		String ris_best = "Il percorso da seguire, nel mese "+mese+" ha un costo di "+score_best+"$ \n"
-				+ "Tale percorso prevede le seguenti tappe: \n";
-	
+		String ris_best = String.format("Il percorso da seguire, nel mese %02d ha un costo di "+score_best+"$ \n"
+				+ "Tale percorso prevede le seguenti tappe: \n", mese);
+		
 		for(int i = 0; i<best.size();i++) 
 			ris_best+="-Giorno "+(i+1)+":  "+best.get(i).toString()+";\n";
 				
@@ -85,11 +89,14 @@ public class Model {
 		
 		//Casi terminali
 		
+		//termino quando raggiungo i 15 giorni 
 		if(L==NUMERO_GIORNI_TOTALI) {
 		   
-		      
+		     //dunque controllo i vincoli della soluzione parziale 
 			if(this.controllaParziale(parziale)) {
 			
+				//ne calcolo i punteggi e in caso modifico il best
+				
 			    if(score_best==0.0) {
 		        
 		        	score_best=this.punteggioSoluzione(parziale);
@@ -118,9 +125,12 @@ public class Model {
 		for(int i=0; i<this.listaCitta.size();i++) {
 			
 
-			//System.out.println("ok");
+			/*
+			 * Pongo i vincoli nella condizione terminale, dal momento che
+			 * alcuni di essi possono essere valuati solo quando si ha una soluzione completa
+			 */
 			
-			if(listaCitta.get(i).getCounter()<6) {
+			
 			
 			Citta c = this.listaCitta.get(i);
 
@@ -148,9 +158,6 @@ public class Model {
 		    
 		}
 		
-		
-		
-	}
 	
 	
 	//questi metodi sono da usare all'interno del trova sequenza
