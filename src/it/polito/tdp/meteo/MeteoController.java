@@ -55,18 +55,23 @@ public class MeteoController {
 	@FXML
 	void doCalcolaSequenza(ActionEvent event) {
 
+		try {
+		String  sequenza = this.model.trovaSequenza(Integer.parseInt(this.boxMese.getValue()));
+		this.txtResult.setText(sequenza);
+		}catch(NumberFormatException nfe) {
+			this.txtResult.setText("ERRORE! Si prega di selezionare un mese..");
+		}
 	}
 
 	@FXML
 	void doCalcolaUmidita(ActionEvent event) {
 
-		//String mese = String.format("%02d", Integer.parseInt(this.boxMese.getValue()));
-		//System.out.println(mese);
-	    
+		try {
 		String umiditaAVG = this.model.getUmiditaMedia(Integer.parseInt(this.boxMese.getValue()));
-	
 	    this.txtResult.setText(umiditaAVG);
-		
+		}catch(NumberFormatException nfe) {
+			this.txtResult.setText("ERRORE! Si prega di selezionare un mese..");
+		}
 	}
 
 	@FXML
