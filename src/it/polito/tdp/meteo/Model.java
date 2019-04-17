@@ -77,11 +77,19 @@ public class Model {
 				+ "Tale percorso prevede le seguenti tappe: \n", mese);
 		
 		for(int i = 0; i<best.size();i++) 
-			ris_best+="-Giorno "+(i+1)+":  "+best.get(i).toString()+";\n";
+			ris_best+="-Giorno "+(i+1)+":  "+best.get(i).toString()+" ("+best.get(i).getCosto()+" $);\n";
+		
 				
 		
 		return ris_best;
 	}
+	
+	
+	/*
+	 * Questo metodo è stato implementato senza il concetto di data, 
+	 * partendo dal presupposto che tutti i primi 15 giorni del mese siano presenti sul DB
+	 * La gestione delle dati mediante le opportune classi verrà effettuata nei successivi laboratori, dove opportuno
+	 */
 
 	
 	private void cerca(List<SimpleCity> parziale, int L, int mese) {
@@ -128,6 +136,8 @@ public class Model {
 			/*
 			 * Pongo i vincoli nella condizione terminale, dal momento che
 			 * alcuni di essi possono essere valuati solo quando si ha una soluzione completa
+			 * 
+			 * Pongo solo dei vincoli solo sulle citta visitate più di 6 volte
 			 */
 			
 			if(this.controlloRicorsivo(parziale, L)) {
