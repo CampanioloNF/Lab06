@@ -50,7 +50,7 @@ public class Model {
     //Chiede al DAO la media di umidita presente in ogni citta e le memorizza in una mappa
 		Map<String, Double> medieUmidita = dao.getAvgRilevamentiMese(mese);
 		
-      String risultato= String.format("Nel mese %02d le seguenti città presentano in media tale umidità :\n", mese);
+      String risultato= "";
         
         for(Entry<String, Double> loc : medieUmidita.entrySet()) {
         	risultato+=loc.getKey()+":   "+loc.getValue()+"\n"; 
@@ -59,6 +59,20 @@ public class Model {
 		return risultato;
 	}
 	
+	/*
+	 * 
+	 * In alternativa si possono scindere le ricerche delle possibili combinazioni e delle migliori combinazioni
+	 * 
+	 * In questo caso:
+	 * 
+	 * -Creo una soluzione
+	 * -Vedo se è accettabile
+	 * -Valuto se è migliore delle precedenti
+	 * 
+	 * La classe SimpleCity semplicemente contiene il nome della citta ed il relativo costo 
+	 *  (a partire dal Rilevamento effettuato nella Citta con il nome della citta)
+	 * 
+	 */
 
 	public String trovaSequenza(int mese) {
 
@@ -73,13 +87,10 @@ public class Model {
 		
 		cerca(parziale, 0, mese);
 		
-		String ris_best = String.format("Il percorso da seguire, nel mese %02d ha un costo di "+score_best+"$ \n"
-				+ "Tale percorso prevede le seguenti tappe: \n", mese);
+		String ris_best = String.format(" \n(con un costo di %2.2f)\n", score_best);
 		
 		for(int i = 0; i<best.size();i++) 
-			ris_best+="-Giorno "+(i+1)+":  "+best.get(i).toString()+" ("+best.get(i).getCosto()+" $);\n";
-		
-				
+			ris_best+=String.format(" - Giorno %d :   %s  (%d)\n", (i+1), best.get(i).toString(), best.get(i).getCosto());
 		
 		return ris_best;
 	}
@@ -140,7 +151,7 @@ public class Model {
 			 * Pongo solo dei vincoli solo sulle citta visitate più di 6 volte
 			 */
 			
-			if(this.controlloRicorsivo(parziale, L)) {
+			if(this.controlloGiorniMax(parziale, L)) {
 			
 			Citta c = this.listaCitta.get(i);
 
@@ -161,7 +172,7 @@ public class Model {
 			  //ricorsione
 			  cerca(parziale, L+1, mese);
 			
-			  //si torna indietro 
+			  //si torna indietro (o invece di L parziale.size-1)
 		      parziale.remove(L);
 			
 			}
@@ -187,18 +198,20 @@ public class Model {
 
 	private boolean controllaParziale(List<SimpleCity> parziale) {
 
+		//per ogni citta
 	  for(Citta c : this.listaCitta) {
 		int cont= 0;
 		int contM=0;
-		
+		   //conto quante ce ne sono nel parziale
 		  for(SimpleCity sc: parziale) {
 			  if(sc.getNome().equals(c.getNome())) {
 				  cont++;
 				  contM++;
 			  }
+			  //se sono meno di tre di fila esco dal ciclo e aspetto di ritrovare la stessa citta
 			  else if(cont<NUMERO_GIORNI_CITTA_CONSECUTIVI_MIN) {
-				  cont=0;
-				  continue;
+				  cont=0;    //ricomincia a contare
+				  continue; //mi mantiene nel ciclo
 			  }
 		  }
 		  
@@ -217,7 +230,7 @@ public class Model {
 	 * per ottimizzare la ricerca, abbandonando dei rami ricorsivi dopo almeno 6 passaggi
 	 */
 
-	private boolean controlloRicorsivo(List<SimpleCity> parziale, int L) {
+	private boolean controlloGiorniMax(List<SimpleCity> parziale, int L) {
 		
 	if(L>=NUMERO_GIORNI_CITTA_MAX) {	
 		

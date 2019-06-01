@@ -1,6 +1,7 @@
 package it.polito.tdp.meteo;
 
 import java.net.URL;
+import java.time.Month;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -13,6 +14,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 
+/*
+ * Modifica del progetto in base alla soluzione proposta in Aula
+ */
+
 public class MeteoController {
 
 	@FXML
@@ -21,8 +26,8 @@ public class MeteoController {
 	@FXML
 	private URL location;
 
-	@FXML
-	private ChoiceBox<String> boxMese;
+	@FXML     
+	private ChoiceBox<Month> boxMese;
 
 	@FXML
 	private Button btnCalcola;
@@ -35,16 +40,16 @@ public class MeteoController {
 
 	private Model model;
 	
-	private ObservableList<String> comboItems;
+	private ObservableList<Month> comboItems;
 	
 	
 	
 	public void caricaBox() {
 		
-		List<String> mesi = new LinkedList <String> ();
+		List<Month> mesi = new LinkedList <Month> ();
 		
 		for(int i=1; i<13; i++) {
-			mesi.add(""+i);
+			mesi.add(Month.of(i));
 		}
 	
 		comboItems = FXCollections.observableList(mesi);
@@ -55,8 +60,11 @@ public class MeteoController {
 	@FXML
 	void doCalcolaSequenza(ActionEvent event) {
 
+		int mese = this.boxMese.getValue().getValue();
+		
 		try {
-		String  sequenza = this.model.trovaSequenza(Integer.parseInt(this.boxMese.getValue()));
+		String  sequenza = this.model.trovaSequenza(mese);
+		sequenza =  String.format("Il percorso da seguire, nel mese %s,  prevede le seguenti tappe: ",this.boxMese.getValue())+sequenza;
 		this.txtResult.setText(sequenza);
 		}catch(NumberFormatException nfe) {
 			this.txtResult.setText("ERRORE! Si prega di selezionare un mese..");
@@ -66,8 +74,12 @@ public class MeteoController {
 	@FXML
 	void doCalcolaUmidita(ActionEvent event) {
 
+
+		int mese = this.boxMese.getValue().getValue();
+		
 		try {
-		String umiditaAVG = this.model.getUmiditaMedia(Integer.parseInt(this.boxMese.getValue()));
+		String umiditaAVG = this.model.getUmiditaMedia(mese);
+		umiditaAVG = String.format("Nel mese %s le seguenti città presentano in media tale umidità :\n",  this.boxMese.getValue()) + umiditaAVG;
 	    this.txtResult.setText(umiditaAVG);
 		}catch(NumberFormatException nfe) {
 			this.txtResult.setText("ERRORE! Si prega di selezionare un mese..");
